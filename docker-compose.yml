@@ -3,6 +3,6 @@ services:
   web:
     build:
       context: nginx
-      dockerfile: ../Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8080:80"
