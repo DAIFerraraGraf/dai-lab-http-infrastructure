@@ -24,6 +24,11 @@ To avoid conflict while building the image, we remove de default configuration f
 
 ## Step 4: Reverse proxy with Traefik
 
+Dans ce cas précis, /var/run/docker.sock:/var/run/docker.sock permet à Traefik d'accéder au socket Docker du système hôte depuis le conteneur. Le socket Docker (docker.sock) est un point d'accès à l'API Docker qui permet à Traefik d'interagir dynamiquement avec le moteur Docker pour récupérer des informations sur les conteneurs en cours d'exécution, les réseaux, etc.
+
+En utilisant ce volume, Traefik peut surveiller l'état des conteneurs Docker, découvrir les services nouvellement créés ou supprimés, et mettre à jour dynamiquement sa configuration en fonction des changements dans l'environnement Docker, ce qui lui permet de rediriger le trafic vers les services appropriés de manière dynamique et automatique.
+
+
 
 ## Step 5: Scalability and load balancing
 
