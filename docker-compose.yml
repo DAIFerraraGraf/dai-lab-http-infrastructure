@@ -1,10 +1,5 @@
 version: '3.8'
 services:
-  nginx:
-    build: nginx
-    labels:
-      - traefik.http.routers.nginx.rule=Host(`localhost`)
-
 
   reverse_proxy:
     image: traefik
@@ -16,3 +11,17 @@ services:
     ports:
       - "80:80" # Web sites
       - "8080:8080" # Traefik dashboard
+
+  javaserver:
+    image: dai-lab-https-java-server-1
+    expose:
+      - 80
+    build:
+      context: .
+    labels:
+      - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
+
+  nginx:
+    build: nginx
+    labels:
+      - traefik.http.routers.nginx.rule=Host(`localhost`)

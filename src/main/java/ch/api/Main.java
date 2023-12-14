@@ -10,7 +10,7 @@ public class Main {
                 cors.add(CorsPluginConfig::anyHost);
             });
         });
-        app.start(7000);
+        app.start(80);
 
         TaskController taskController = new TaskController();
         app.get("/api/tasks", taskController::getAll);
