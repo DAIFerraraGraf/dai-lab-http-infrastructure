@@ -10,6 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TaskController {
     private ConcurrentHashMap<Integer, Task> tasks = new ConcurrentHashMap<Integer, Task>();
     private int lastId = 0;
+    public TaskController(){
+        tasks.put(++lastId, new Task("DAI", "reviser le TE"));
+        tasks.put(++lastId, new Task("POO", "Faire les devoirs pour le 11.10"));
+        tasks.put(++lastId, new Task("PST", "finir le projet"));
+        tasks.put(++lastId, new Task("Math3", "avancer sur les exercices"));
+
+    }
     public void getAll(Context ctx){
         ctx.json(tasks);
     }
