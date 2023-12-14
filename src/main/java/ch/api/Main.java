@@ -19,5 +19,12 @@ public class Main {
         app.put("/api/tasks/{id}", taskController::update);
         app.delete("/api/tasks/{id}", taskController::delete);
 
+        TaskClassController taskClassController = new TaskClassController();
+        app.get("/api/taskClasses", taskClassController::getAll);
+        app.get("/api/taskClasses/{id}", taskClassController::getOne);
+        app.post("/api/taskClasses/", taskClassController::create);
+        app.put("/api/taskClasses/{id}", taskClassController::update);
+        app.delete("/api/taskClasses/{id}", taskClassController::delete);
+
     }
 }

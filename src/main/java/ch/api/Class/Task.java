@@ -6,12 +6,15 @@ public class Task {
     public int id;
     public String title;
     public String description;
+    public int taskClassId;
 
-    public Task(String title, String description){
+    public Task(String title, String description, int taskClassId){
         id = ++counter;
         this.title = title;
         this.description = description;
+        this.taskClassId = taskClassId;
     }
     public Task(){
+        id = ++counter;
     }
 }

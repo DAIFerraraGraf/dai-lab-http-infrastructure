@@ -3,7 +3,7 @@ package ch.api.Class;
 public class TaskClass {
 
     private static int counter = 0;
-    int id;
+    public int id;
     public String title;
     public String description;
 
@@ -14,5 +14,6 @@ public class TaskClass {
     }
 
     public TaskClass() {
+        id = ++counter;
     }
 }
