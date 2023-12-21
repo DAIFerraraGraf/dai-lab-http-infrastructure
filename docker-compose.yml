@@ -20,8 +20,12 @@ services:
       context: .
     labels:
       - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
+    deploy:
+      replicas: 2
 
   nginx:
     build: nginx
     labels:
       - traefik.http.routers.nginx.rule=Host(`localhost`)
+    deploy:
+      replicas: 2

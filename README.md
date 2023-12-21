@@ -31,6 +31,22 @@ En utilisant ce volume, Traefik peut surveiller l'état des conteneurs Docker, d
 
 
 ## Step 5: Scalability and load balancing
+To start several server instance, we use the deploy command inside the docker compose file
+```
+  nginx:
+    build: nginx
+    labels:
+      - traefik.http.routers.nginx.rule=Host(`localhost`)
+    deploy:
+      replicas: 2
+```
+
+For testing Treafik, we can use this command to add or remove some instance of each service running inside the docker compose:
+```
+docker compose up --scale nginx=6 -d
+```
+This command will set the number of instance for nginx to 6. If the actual number of instance is lower, docker will add new instances. And if it's greater, it will remove instancess.
+
 
 
 ## Step 6: Load balancing with round-robin and sticky sessions
