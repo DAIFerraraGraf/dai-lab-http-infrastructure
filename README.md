@@ -50,7 +50,12 @@ This command will set the number of instance for nginx to 6. If the actual numbe
 
 
 ## Step 6: Load balancing with round-robin and sticky sessions
-
+To enable sticky-sessions, we just have to put these lines inside the configuration of the javaserver inside the docker file :
+```
+    labels:
+      - traefik.http.services.javaserver.loadbalancer.sticky=true
+      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
+```
 
 
 ## Step 7: Securing Traefik with HTTPS

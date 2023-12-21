@@ -20,6 +20,9 @@ services:
       context: .
     labels:
       - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
+      - traefik.http.services.javaserver.loadbalancer.sticky=true
+      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
+#      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
     deploy:
       replicas: 2
 
