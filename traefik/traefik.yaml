@@ -1,0 +1,23 @@
+# Define providers
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+
+
+# Define entrypoints
+entryPoints:
+  http:
+    address: ":80"
+  https:
+    address: ":443"
+
+# Configure the API
+api:
+  insecure: true
+  dashboard: true
+
+tls:
+  certificates:
+    - certFile: "/etc/traefik/certificates/cert.pem"
+      keyFile: "/etc/traefik/certificates/key.pem"

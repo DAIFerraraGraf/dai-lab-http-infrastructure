@@ -4,12 +4,14 @@ services:
   reverse_proxy:
     image: traefik
     command:
-    - --api.insecure=true # Enable Traefik dashboard
     - --providers.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/ssl:/etc/traefik/certificates
+      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
     ports:
       - "80:80" # Web sites
+      - "443:443" # Web sites
       - "8080:8080" # Traefik dashboard
 
   javaserver:
@@ -22,7 +24,12 @@ services:
       - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
       - traefik.http.services.javaserver.loadbalancer.sticky=true
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
-#      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
+      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
+
+
+      - traefik.http.routers.javaserver.tls=true
+      - traefik.http.routers.javaserver.entrypoints=https
+
     deploy:
       replicas: 2
 
@@ -30,5 +37,7 @@ services:
     build: nginx
     labels:
       - traefik.http.routers.nginx.rule=Host(`localhost`)
+      - traefik.http.routers.nginx.tls=true
+      - traefik.http.routers.nginx.entrypoints=https
     deploy:
       replicas: 2
