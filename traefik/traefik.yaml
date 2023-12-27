@@ -2,13 +2,24 @@
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
-    exposedByDefault: false
+    exposedByDefault: true
 
 
 # Define entrypoints
+#entryPoints:
+#  http:
+#    address: ":80"
+#  https:
+#    address: ":443"
 entryPoints:
   http:
     address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+          scheme: https
+          permanent: true
   https:
     address: ":443"
 

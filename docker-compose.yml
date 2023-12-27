@@ -25,10 +25,8 @@ services:
       - traefik.http.services.javaserver.loadbalancer.sticky=true
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
-
-
-      - traefik.http.routers.javaserver.tls=true
       - traefik.http.routers.javaserver.entrypoints=https
+      - traefik.http.routers.javaserver.tls=true
 
     deploy:
       replicas: 2
@@ -37,7 +35,7 @@ services:
     build: nginx
     labels:
       - traefik.http.routers.nginx.rule=Host(`localhost`)
-      - traefik.http.routers.nginx.tls=true
       - traefik.http.routers.nginx.entrypoints=https
+      - traefik.http.routers.nginx.tls=true
     deploy:
       replicas: 2
