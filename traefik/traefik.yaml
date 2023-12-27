@@ -6,11 +6,6 @@ providers:
 
 
 # Define entrypoints
-#entryPoints:
-#  http:
-#    address: ":80"
-#  https:
-#    address: ":443"
 entryPoints:
   http:
     address: ":80"
