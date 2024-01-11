@@ -16,6 +16,7 @@ public class Main {
         app.get("/api/tasks", taskController::getAll);
         app.get("/api/tasks/{id}", taskController::getOne);
         app.post("/api/tasks/", taskController::create);
+        app.get("/api/cookie/", taskController::cookie);
         app.put("/api/tasks/{id}", taskController::update);
         app.delete("/api/tasks/{id}", taskController::delete);
 

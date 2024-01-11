@@ -192,6 +192,27 @@ It will generate the certificates and the key of a validity of one year. We have
 ## Optional steps
 
 ### Optional step 1: Management UI
+To manage easily the docker containers, we can use the portainer service. To do so, we have to add the following service
+inside the docker compose file:
+```
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9443:9443
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    restart: unless-stopped
+```
+
+We are mapping the port 9443 for the HTTPS connection and the port 9000 for the HTTP connection. We are also mapping the
+docker socket to allow portainer to manage the docker containers. We are also mapping a volume to allow portainer to
+save the data.
+
+With this configuration, we can access the portainer dashboard with the url `localhost:9000` or `localhost:9443`. With 
+portainer, we can manage the docker containers, the docker images, the docker volumes and the docker networks easily, 
+without coding manually a web interface.
 
 
 ### Optional step 2: Integration API - static Web site

@@ -1,6 +1,6 @@
 // Fonction pour récupérer les données depuis l'API
 function fetchData() {
-    fetch('http://localhost:7000/api/employes')
+    fetch('http://localhost/api/cookie')
         .then(response => response.json())
         .then(data => {
             // Appelé lorsque les données sont récupérées avec succès

@@ -41,4 +41,10 @@ public class TaskController {
         tasks.put(id, task);
         ctx.status(200);
     }
+
+    public void cookie(Context ctx){
+        System.out.println("cookie");
+        ctx.cookie("name", "value");
+        ctx.status(200);
+    }
 }
