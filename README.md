@@ -115,17 +115,17 @@ docker compose down # To stop and remove the docker compose
 We jointly integrated the database project with the DAI project for the graphical interface part to display the data.
 The database project is a garbage center management system. It allows to manage the employees and the waste collection.
 
-In our graphical interface, we have two views. Each view are displayed in function of the role of the login user. We
+In our graphical interface, we have two views. Each view is displayed in function of the role of the login user. We
 have
 three roles: Employe, Secrétaire and Responsable. The role is defined in the database project. The login is also defined
 in the database project. Every user have the same password: `password`.
 Here is a small list of some of the users:
 
-| Login    | Password | Lastname | Firstname | Role        |
-|----------|----------|----------|-----------|-------------|
-| jdoe     | password | Doe      | John      | Responsable |
-| lhussain | password | Hussain  | Lucas     | Secrétaire  |
-| asmith   | password | Smith    | Alice     | Employé     |
+| Login    | Password | Last name | First name | Role        |
+|----------|----------|-----------|------------|-------------|
+| jdoe     | password | Doe       | John       | Responsable |
+| lhussain | password | Hussain   | Lucas      | Secrétaire  |
+| asmith   | password | Smith     | Alice      | Employé     |
 
 The first one is the employes view. It allows to see the list of the employees and to add, modify or delete an employee.
 
@@ -191,7 +191,7 @@ javaserver:
 ```
 
 In our case, we want to access the nginx server and the javaserver. We also want to access the traefik dashboard. To do
-so, we have to add the labels to the services we want to be accessible from the outside. For the nginx server, we want
+so, we must add the labels to the services we want to be accessible from the outside. For the nginx server, we want
 to access it with the url `localhost`. So we add the label `traefik.http.routers.nginx.rule=Host(`localhost`)`.
 
 For the javaserver, we want to access it with the url `localhost/api`. So we add the label
@@ -227,7 +227,7 @@ compose:
 ```
 docker compose up --scale nginx=6 -d
 ```
-This command will set the number of instance for nginx to 6. If the actual number of instance is lower, docker will add
+This command will set the number of instances for nginx to 6. If the actual number of instances is lower, docker will add
 new instances. And if it's greater, it will remove instances.
 
 To check if its truly working, we can use the traefik dashboard. We can access it with the url `localhost:8080` and check
@@ -243,16 +243,17 @@ file :
       - traefik.http.services.javaserver.loadbalancer.sticky=true
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
 ```
-We don't have to specify a sticky cookie for the java server because our web page is stateless. So we don't need to keep
+We don't have to specify a sticky cookie for the java server because our web page is stateless. So, we don't need to keep
 the session of the user on the same server.
 
+// TODO
 To test the sticky sessions, we added logs inside the java server. We can see the logs inside the command line and check 
 with the docker header which instance of the java server is responding.
 
 
 ## Step 7: Securing Traefik with HTTPS
 
-To secure Traefik with HTTPS, we have to modify the docker compose file to mount the new configuration file and map the
+To secure Traefik with HTTPS, we must modify the docker compose file to mount the new configuration file and map the
 new volume for the certificates. We also need to add the 443 port to be able to make an HTTPS connection.
 
 ```
@@ -321,7 +322,7 @@ To generate the certificates, we can use the following command inside a linux te
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 365
 ```
 
-It will generate the certificates and the key of a validity of one year. We have to put them inside the
+It will generate the certificates and the key of a validity of one year. We must put them inside the
 folder `traefik/ssl`.
 
 ## Optional steps
@@ -352,4 +353,5 @@ portainer, we can manage the docker containers, the docker images, the docker vo
 without coding manually a web interface.
 
 ### Optional step 2: Integration API - static Web site
-By doing this, we were able to make an even more realistic and complete project.
+As we said earlier, we integrated the database project with the DAI project for the graphical interface part to display
+the data. It includes some javascript code to display the data and make all the CRUD operations.
