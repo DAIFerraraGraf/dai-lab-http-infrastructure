@@ -1,56 +1,74 @@
 version: '3.8'
+networks:
+    bdr-net:
+      driver: bridge
+
 services:
+    postgresql:
+      image: 'bitnami/postgresql:16'
+      container_name: bdr-postgresql-dai-https
+      environment:
+        - POSTGRESQL_USERNAME=bdr
+        - POSTGRESQL_PASSWORD=bdr
+        - POSTGRESQL_DATABASE=bdr
+        - POSTGRESQL_POSTGRES_PASSWORD=root
+      ports:
+        - 5432:5432
+      volumes:
+        - .:/data:ro
+      networks:
+        - bdr-net
 
-  reverse_proxy:
-    image: traefik
-    command:
-    - --providers.docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./traefik/ssl:/etc/traefik/certificates
-      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
-    ports:
-      - "80:80" # Web sites
-      - "443:443" # Web sites
-      - "8080:8080" # Traefik dashboard
+    reverse_proxy:
+      image: traefik
+      command:
+      - --providers.docker
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./traefik/ssl:/etc/traefik/certificates
+        - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml
+      ports:
+        - "80:80" # Web sites
+        - "443:443" # Web sites
+        - "8080:8080" # Traefik dashboard
 
-  javaserver:
-    image: dai-lab-https-java-server-1
-    expose:
-      - 80
-    build:
-      context: .
-    labels:
-      - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
-      - traefik.http.services.javaserver.loadbalancer.sticky=true
-      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
-      - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
-      - traefik.http.routers.javaserver.entrypoints=https
-      - traefik.http.routers.javaserver.tls=true
+    javaserver:
+      image: dai-lab-https-java-server-1
+      expose:
+        - 80
+      build:
+        context: .
+      labels:
+        - traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)
+        - traefik.http.services.javaserver.loadbalancer.sticky=true
+        - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
+        - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
+        - traefik.http.routers.javaserver.entrypoints=https
+        - traefik.http.routers.javaserver.tls=true
 
-    deploy:
-      replicas: 2
+      deploy:
+        replicas: 2
 
-  portainer:
-    image: portainer/portainer-ce:latest
-    ports:
-      - 9443:9443
-      - 9000:9000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    restart: unless-stopped
+    portainer:
+      image: portainer/portainer-ce:latest
+      ports:
+        - 9443:9443
+        - 9000:9000
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./portainer_data:/data
+      restart: unless-stopped #restart automatically if not stopped by user
 #    labels:
 #      - traefik.http.routers.portainer.rule=Host(`localhost`) && PathPrefix(`/portainer`)
 #      - traefik.http.routers.portainer.entrypoints=https
 #      - traefik.http.routers.portainer.tls=true
 #      - traefik.http.services.portainer.loadbalancer.server.port=9000
 
-  nginx:
-    build: nginx
-    labels:
-      - traefik.http.routers.nginx.rule=Host(`localhost`)
-      - traefik.http.routers.nginx.entrypoints=https
-      - traefik.http.routers.nginx.tls=true
-    deploy:
-      replicas: 2
+    nginx:
+      build: nginx
+      labels:
+        - traefik.http.routers.nginx.rule=Host(`localhost`)
+        - traefik.http.routers.nginx.entrypoints=https
+        - traefik.http.routers.nginx.tls=true
+      deploy:
+        replicas: 2
