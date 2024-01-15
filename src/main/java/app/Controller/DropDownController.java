@@ -115,4 +115,20 @@ public class DropDownController {
             e.printStackTrace();
         }
     }
+    /**
+     * Récupère la liste des statuts.
+     * @param ctx le contexte de la requête HTTP
+     */
+    public void getStatus(Context ctx){
+        ArrayList<DropDown> status = new ArrayList<DropDown>();
+        try {
+            ResultSet rs = Database.executeQuery("SELECT * FROM status");
+            while (rs.next()) {
+                status.add(new DropDown(rs.getString("nom"), rs.getString("nom")));
+            }
+            ctx.json(status);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

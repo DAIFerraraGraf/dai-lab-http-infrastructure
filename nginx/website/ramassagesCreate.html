@@ -46,7 +46,9 @@
                         </div>
                         <div class="form-group flex-column d-flex col-md-6">
                             <label class="form-control-label px-3">Status<span class="text-danger"> *</span></label>
-                            <input type="text" id="status" name="status" placeholder="Enter status" required>
+                            <select id="status" name="status" required>
+                                <!-- Options will be added here dynamically -->
+                            </select>
                         </div>
                     </div>
                     <div class="row">
@@ -106,10 +108,11 @@
         $('#contenant').select2();
         $('#decheterie').select2();
         $('#vehicule').select2();
+        $('#status').select2();
         fetchDecheteries();
         fetchEmployesList();
         fetchVehicle();
-
+        fetchStatus();
         $('#decheterie').on('change', function () {
             // Vérifiez si e.params est défini
 

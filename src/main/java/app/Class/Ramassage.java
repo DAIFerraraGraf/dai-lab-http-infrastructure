@@ -19,7 +19,7 @@ public class Ramassage {
     /**
      * Le statut du ramassage.
      */
-    public String status;
+    public String fk_status;
 
     /**
      * Le poids du ramassage.
@@ -50,17 +50,17 @@ public class Ramassage {
      * Constructeur de la classe Ramassage avec tous les paramètres.
      * @param id L'identifiant du ramassage.
      * @param date La date du ramassage.
-     * @param status Le statut du ramassage.
+     * @param fk_status Le statut du ramassage.
      * @param poids Le poids du ramassage.
      * @param fk_contenant L'identifiant du contenant utilisé pour le ramassage.
      * @param fk_employee L'identifiant de l'employé qui a effectué le ramassage.
      * @param fk_decheterie L'identifiant de la déchèterie où le ramassage a eu lieu.
      * @param fk_vehicule L'identifiant du véhicule utilisé pour le ramassage.
      */
-    public Ramassage(int id, Date date, String status, double poids, int fk_contenant, String fk_employee, int fk_decheterie, String fk_vehicule) {
+    public Ramassage(int id, Date date, String fk_status, double poids, int fk_contenant, String fk_employee, int fk_decheterie, String fk_vehicule) {
         this.id = id;
         this.date = date;
-        this.status = status;
+        this.fk_status = fk_status;
         this.poids = poids;
         this.fk_contenant = fk_contenant;
         this.fk_employee = fk_employee;

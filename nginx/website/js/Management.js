@@ -181,6 +181,16 @@ function fetchVehicle() {
         });
 
 }
+function fetchStatus(){
+    fetch('https://localhost/api/status')
+        .then(response => response.json())
+        .then(data => {
+            populateDropdown('status', data);
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des données:', error);
+        });
+}
 // Fonction pour peupler une liste déroulante avec des données
 function populateDropdown(dropdownId, data) {
     const dropdown = document.getElementById(dropdownId);
@@ -304,7 +314,7 @@ function submitRamassageUpdateForm() {
     // Créer un objet avec les valeurs
     const data = {
         date: dateRamassage,
-        status: status,
+        fk_status: status,
         poids: poids,
         fk_contenant: conteneur,
         fk_employee: employee,
@@ -419,7 +429,7 @@ function submitCreateRamassageForm() {
     // Créer un objet avec les valeurs
     const data = {
         date: dateRamassage,
-        status: status,
+        fk_status: status,
         poids: poids,
         fk_contenant: conteneur,
         fk_employee: employee,

@@ -46,8 +46,9 @@
                         </div>
                         <div class="form-group flex-column d-flex col-md-6">
                             <label class="form-control-label px-3">Status<span class="text-danger"> *</span></label>
-                            <input type="text" id="status" name="status" placeholder="Enter status" required>
-                        </div>
+                            <select id="status" name="status" required>
+                                <!-- Options will be added here dynamically -->
+                            </select>
                     </div>
                     <div class="row">
                         <div class="form-group flex-column d-flex col-md-6">
@@ -107,7 +108,7 @@
         $('#contenant').select2();
         $('#decheterie').select2();
         $('#vehicule').select2();
-
+        $('#status').select2();
 
         $('#decheterie').on('change', function () {
             // Vérifiez si e.params est défini
@@ -134,6 +135,7 @@
         fetchDecheteries();
         fetchVehicle();
         fetchEmployesList();
+        fetchStatus();
         if (idToFetch) {
 
             fetch(`https://localhost/api/ramassages/${idToFetch}`)
@@ -142,14 +144,15 @@
                     const date = new Date(ramassageData.date);
                     const formattedDate = date.toISOString().split('T')[0];
 
-                    document.getElementById('status').value = ramassageData.status ;
                     document.getElementById('poids').value = ramassageData.poids ;
                     document.getElementById('date').value = formattedDate;
 
                     $('#decheterie').val(ramassageData.fk_decheterie).trigger('change');
                     $('#employee').val(ramassageData.fk_employee).trigger('change');
                     $('#vehicule').val(ramassageData.fk_vehicule).trigger('change');
+                    $('#status').val(ramassageData.fk_status).trigger('change');
                     $('#contenant').val(ramassageData.fk_contenant).trigger('change');
+
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des données de l\'employé:', error);

@@ -71,7 +71,7 @@ public class RamassageController {
         try{
             ResultSet rs = Database.executeQuery("SELECT * FROM ramassage WHERE id = '" + ctx.pathParam("id") + "'");
             if(rs.next()){
-                ctx.json(new Ramassage(rs.getInt("id"), rs.getDate("date"), rs.getString("status"), rs.getInt("poids"), rs.getInt("fk_contenant"), rs.getString("fk_employee"), rs.getInt("fk_decheterie"), rs.getString("fk_vehicule")));
+                ctx.json(new Ramassage(rs.getInt("id"), rs.getDate("date"), rs.getString("fk_status"), rs.getInt("poids"), rs.getInt("fk_contenant"), rs.getString("fk_employee"), rs.getInt("fk_decheterie"), rs.getString("fk_vehicule")));
             }
 
         }catch (Exception e) {
@@ -88,7 +88,7 @@ public class RamassageController {
 
             Ramassage ramassage = ctx.bodyAsClass(Ramassage.class);
             ramassage.id = uniqueID();
-            Database.executeUpdate("INSERT INTO ramassage (id, date, status, poids, fk_contenant, fk_employee, fk_decheterie, fk_vehicule) VALUES ('" + ramassage.id + "', '" + ramassage.date + "', '" + ramassage.status + "', '" + ramassage.poids + "', '" + ramassage.fk_contenant + "', '" + ramassage.fk_employee + "', '" + ramassage.fk_decheterie + "', '" + ramassage.fk_vehicule + "')");
+            Database.executeUpdate("INSERT INTO ramassage (id, date, fk_status, poids, fk_contenant, fk_employee, fk_decheterie, fk_vehicule) VALUES ('" + ramassage.id + "', '" + ramassage.date + "', '" + ramassage.fk_status + "', '" + ramassage.poids + "', '" + ramassage.fk_contenant + "', '" + ramassage.fk_employee + "', '" + ramassage.fk_decheterie + "', '" + ramassage.fk_vehicule + "')");
             ctx.status(201);
         } catch (Exception e) {
             ctx.status(500).result(e.getMessage());
@@ -113,7 +113,7 @@ public class RamassageController {
     public void update(Context ctx) {
         try {
             Ramassage ramassage = ctx.bodyAsClass(Ramassage.class);
-            Database.executeUpdate("UPDATE ramassage SET date = '" + ramassage.date + "', status = '" + ramassage.status + "', poids = '" + ramassage.poids + "', fk_contenant = '" + ramassage.fk_contenant + "', fk_employee = '" + ramassage.fk_employee + "', fk_decheterie = '" + ramassage.fk_decheterie + "', fk_vehicule = '" + ramassage.fk_vehicule + "' WHERE id = '" + ctx.pathParam("id") + "'");
+            Database.executeUpdate("UPDATE ramassage SET date = '" + ramassage.date + "', fk_status = '" + ramassage.fk_status + "', poids = '" + ramassage.poids + "', fk_contenant = '" + ramassage.fk_contenant + "', fk_employee = '" + ramassage.fk_employee + "', fk_decheterie = '" + ramassage.fk_decheterie + "', fk_vehicule = '" + ramassage.fk_vehicule + "' WHERE id = '" + ctx.pathParam("id") + "'");
             ctx.status(204);
         } catch (Exception e) {
             ctx.status(500).result(e.getMessage());

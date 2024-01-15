@@ -154,7 +154,7 @@ public class EmployeController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            ctx.status(501).result(e.getMessage());
+            ctx.status(500).result(e.getMessage());
         }
     }
 

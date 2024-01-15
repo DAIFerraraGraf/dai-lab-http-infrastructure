@@ -42,6 +42,7 @@ public class Main {
         app.get("/api/vehicules", dropDownController::getVehicule);
         app.get("/api/contenants/{idDecheterie}", dropDownController::getContenant);
         app.get("/api/employesList", dropDownController::getEmploye);
+        app.get("/api/status", dropDownController::getStatus);
 
         RamassageController ramassageController = new RamassageController();
         app.get("/api/ramassages", ramassageController::getAll);
