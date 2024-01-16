@@ -355,3 +355,26 @@ without coding manually a web interface.
 ### Optional step 2: Integration API - static Web site
 As we said earlier, we integrated the database project with the DAI project for the graphical interface part to display
 the data. It includes some javascript code to display the data and make all the CRUD operations.
+
+In the `Management.js` file, several functions are defined to handle interactions with the API and update the user interface.
+
+1. `fetchDataEmployee()` and `fetchDataRamassage()`: These functions respectively retrieve employee and pickup data from the API and call the populateTable() function to fill the table with the retrieved data.
+
+2. `populateTable(data, type)`: This function populates the HTML table with the provided JSON data. It dynamically creates table headers and rows based on the data.
+
+3. `deleteElementById(id, type)`: This function sends a DELETE request to the API to remove an element by its ID.
+
+4. `fetchFonctions()`, `fetchAdresses()`, `fetchDecheteries()`, `fetchEmployesList()`, `fetchVehicle()`, `fetchStatus()`: These functions retrieve respective data from the API and call the populateDropdown() function to fill dropdown lists with the retrieved data.
+
+5. `populateDropdown(dropdownId, data)`: This function fills an HTML dropdown list with the provided JSON data.
+
+6. `submitUpdateEmployeeForm()`, `submitRamassageUpdateForm()`, `submitCreateEmployeeForm()`, `submitCreateRamassageForm()`: These functions retrieve form values, create an object with these values, convert it to JSON, and send a PUT or POST request to the API to update or create an employee or pickup.
+
+7. `onClickAnnulerEmployee()`, `onClickAnnulerRamassage()`, `onClickAddEmployee()`, `onClickAddRamassage()`: These functions redirect the user to another page when a button is clicked.
+
+8. `logout()`: This function removes all cookies and redirects the user to the login page.
+
+These functions manage interactions between the user interface and the API, providing a dynamic interface for viewing, creating, modifying, and deleting data.
+
+In the HTML files `employesUpdate.html` and `ramassagesUpdate.html`, JavaScript code is included at the end to populate the forms when clicking the "Modify" button for an object. This JavaScript code retrieves information from the selected object and places it in the appropriate form fields. Here's how it works:
+`window.onload`: This function is executed when the page is fully loaded. It retrieves the ID of the object to be modified from the page URL (e.g., employesUpdate.html?id=1). Then, it makes a GET request to the API to fetch information about the object with that ID.
