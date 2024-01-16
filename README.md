@@ -431,12 +431,14 @@ new volume for the certificates. We also need to add the 443 port to be able to 
 ```
 
 To enable the HTTPS connection, we have to modify the other services running in the docker compose file. We have to add
-the labels to enable the HTTPS connection and to specify the entrypoint to use.
+the labels to enable the HTTPS connection and to specify the entrypoint to use. We can also specify now to use the
+sticky cookie only for the HTTPS connection for a better security.
 
 ```
 labels:
     - traefik.http.routers.javaserver.entrypoints=https
     - traefik.http.routers.javaserver.tls=true
+    - traefik.http.services.javaserver.loadbalancer.sticky.cookie.secure=true
 ```
 
 Inside the configuration file of Traefik, we have to specify the certificates to use and the entrypoints to use. We also
@@ -577,6 +579,8 @@ modified from the page URL (e.g., employesUpdate.html?id=1). Then, it makes a GE
 information about the object with that ID.
 
 Inside the file `login.html`, we added a javascript code to handle the login. It retrieves the login and the password
-and
-submit them to the API. If the login and the password are correct, the API will return a cookie with the role of the
+and submit them to the API. If the login and the password are correct, the API will return a cookie with the role of the
 user and the id. We can then redirect the user to the correct page.
+
+To make our page `rammassage.html` and `employe.html` more dynamic, we added a javascript code to periodically refresh 
+the data. We can specify the interval of the refresh. The default interval is 5 seconds. The fonction `setInterval()`
