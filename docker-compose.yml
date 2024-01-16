@@ -19,7 +19,7 @@ services:
       networks:
         - bdr-net
 
-    reverse_proxy:
+    reverseproxy:
       image: traefik
       command:
       - --providers.docker
@@ -58,11 +58,6 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock
         - ./portainer_data:/data
       restart: unless-stopped #restart automatically if not stopped by user
-#    labels:
-#      - traefik.http.routers.portainer.rule=Host(`localhost`) && PathPrefix(`/portainer`)
-#      - traefik.http.routers.portainer.entrypoints=https
-#      - traefik.http.routers.portainer.tls=true
-#      - traefik.http.services.portainer.loadbalancer.server.port=9000
 
     nginx:
       build: nginx

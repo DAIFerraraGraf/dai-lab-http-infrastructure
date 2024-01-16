@@ -1,20 +1,31 @@
 # DAI-lab-http-infrastructure
 
+### Authors: Justin Ferrara, Andrea Graf
+
 ## Step 1: Static Web site
 
 To start, we created a static Web page with its own folder.
 We created a folder named `website` that contains everything's needed for the website. To modify the website, we can
 modify the files in this folder.
 
-### nginx.conf
-
-This file contains the configuration of the nginx server. It is a simple configuration that serves the files in the
-`/usr/share/nginx/html` folder. The server will start on port 80 and display the files in the `website` folder. The
-first page will be `index.html`. We always start the server on port 80 because we are not using HTTPS for the moment and
-afterward, we will use a reverse proxy to redirect the HTTP connection to an HTTPS connection and communicate with the
-server directly on port 80.
+To test the website, we can simply download an website example online and put it inside the `website` folder. To test,
+we
+downloaded a website from [here](https://startbootstrap.com/themes) and put it in the `website`
+folder.
 
 ### Dockerfile
+
+To correctly configure the docker image of our nginx server, we need to add this docker file in the root folder of the
+nginx folder.
+
+Dockerfile:
+
+```
+FROM nginx
+RUN rm /etc/nginx/conf.d/default.conf
+COPY website /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/
+```
 
 This file contains the instructions to build the docker image. It starts from the `nginx` image and copies the `website`
 folder in the `/usr/share/nginx/html` folder of the image. It also copies the `nginx.conf` file in
@@ -23,13 +34,53 @@ the `/etc/nginx/conf.d` folder of the image.
 To avoid conflict while building the image, we remove de default configuration file of nginx in the `/etc/nginx/conf.d`
 folder.
 
+To build the docker image alone, we can use the following command inside the folder of the docker file:
+
+```bash
+docker build -t dai/nginx-test .
+```
+
+To run the docker image, we can use the following command:
+
+```bash
+docker run -d -p 80:80 dai/nginx-test
+```
+
+It will start the docker image in detached mode and map the port 80 of the container to the port 80 of the host. We
+should
+now be able to access the website with the url `localhost`.
+
+### nginx.conf
+
+This file contains the configuration of the nginx server. It is a simple configuration that serves the files in the
+`/usr/share/nginx/html` folder. The server will start on port 80 and display the files in the `website` folder. The
+first page will be `login.html`. We always start the server on port 80 because we are not using HTTPS for the moment and
+afterward, we will use a reverse proxy to andle HTTPS connection and communicate with the nginx directly on port 80.
+
+The nginx.conf:
+
+```
+server {
+    listen 80;
+    server_name localhost;
+    location / {
+        root /usr/share/nginx/html;
+        index login.html;
+    }
+}
+```
+
+Feel free to modify the default page by modifying the `index` parameter with your default page.
+
 ## Step 2: Docker compose
+
+#### Note: after this point, we will use the Garbage Center Management System as our API and website.
 
 ### Docker compose file for step 2
 
 This is the docker compose file we used for step 2. It contains only the nginx service.
 
-```
+```yaml
 version: '3.8'
 services:
   nginx:
@@ -38,18 +89,39 @@ services:
       - "8080:80"  # To map the port 80 of the container to the port 8080 of the host
 ```
 
+In this docker compose file, we are using the nginx service. We are building the docker image with the docker file in
+the nginx folder. We are also mapping the port 80 of the container to the port 8080 of the host.
+
 ### Docker compose file
 
 This is our final docker compose file, containing all the services we used for this project.
 
-```
+```yaml
 version: '3.8'
-services:
+networks:
+  bdr-net:
+    driver: bridge
 
-  reverse_proxy:
+services:
+  postgresql:
+    image: 'bitnami/postgresql:16'
+    container_name: bdr-postgresql-dai-https
+    environment:
+      - POSTGRESQL_USERNAME=bdr
+      - POSTGRESQL_PASSWORD=bdr
+      - POSTGRESQL_DATABASE=bdr
+      - POSTGRESQL_POSTGRES_PASSWORD=root
+    ports:
+      - 5432:5432
+    volumes:
+      - .:/data:ro
+    networks:
+      - bdr-net
+
+  reverseproxy:
     image: traefik
     command:
-    - --providers.docker
+      - --providers.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/ssl:/etc/traefik/certificates
@@ -83,8 +155,8 @@ services:
       - 9000:9000
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    restart: unless-stopped
+      - ./portainer_data:/data
+    restart: unless-stopped #restart automatically if not stopped by user
 
   nginx:
     build: nginx
@@ -94,7 +166,6 @@ services:
       - traefik.http.routers.nginx.tls=true
     deploy:
       replicas: 2
-
 ```
 
 ### Docker compose file explanation
@@ -174,18 +245,46 @@ save the tests inside the `Bruno` folder.
 
 *Note that, for these functions, data retrieval may vary based on cookies.
 
+For each of the CRUD operations, we used the json format to send the data to the API. We also used the json format to
+retrieve the data from the API.
+
+To match the database, we created several classes to represent the data. We also created some classes to represent the
+different views of the database.
+
+### Dockerfile
+
+This is the docker file we used to build the docker image of the java server. We are using the maven image to build the
+.jar file and the amazoncorretto image to run the .jar file.
+
+To be able to let the dockerfile compiling and executing the image, we need to provide the source code and the pom file.
+To do so, we need to copy the source code inside the docker image and the pom file. We also need to specify the working
+directory of the docker image. In our case, we are using the `/app` folder as the working directory. We also need to
+specify the command to execute when the docker image is started. In our case, we ar using the
+commannd `mvn clean package`
+to build the .jar file and the command `java -jar target/dai-lab-https-1.0-SNAPSHOT-jar-with-dependencies.jar` to
+execute the .jar file.
+
+```dockerfile
+FROM maven:3.9.4-amazoncorretto-21
+WORKDIR /app
+COPY src/ /app/src/
+COPY pom.xml /app/
+RUN mvn clean package
+CMD ["java", "-jar", "target/dai-lab-https-1.0-SNAPSHOT-jar-with-dependencies.jar"]
+```
+
 ## Step 4: Reverse proxy with Traefik
 
-To start, we have to add the traefik service in the docker compose file. We also have to add the labels to the services
+To start, we have to add the Traefik service in the docker compose file. We also have to add the labels to the services
 we want to be accessible from the outside. In our case, we want to access the nginx server and the javaserver. We also
-want to access the traefik dashboard.
+want to access the Traefik dashboard.
 
-```
-  reverse_proxy:
+```yaml
+  reverseproxy:
     image: traefik
     command:
-    - --api.insecure=true # Enable Traefik dashboard
-    - --providers.docker
+      - --api.insecure=true # Enable Traefik dashboard
+      - --providers.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
@@ -196,10 +295,10 @@ want to access the traefik dashboard.
 The first line is the name of the service. The second line is the image we want to use. The third line is the command
 we want to execute when the container is started.
 
-In our case, we want to enable the traefik dashboard and we want to
-use the docker provider. The docker provider allows traefik to discover the services running in the docker compose file.
-The fourth line is the volume we want to mount to allow traefik to access the docker socket. The fifth line is the ports
-we want to expose. In our case, we want to expose the port 80 for the websites and the port 8080 for the traefik
+In our case, we want to enable the Traefik dashboard, and we want to
+use the docker provider. The docker provider allows Traefik to discover the services running in the docker compose file.
+The fourth line is the volume we want to mount to allow Traefik to access the docker socket. The fifth line is the ports
+we want to expose. In our case, we want to expose the port 80 for the websites and the port 8080 for the Traefik
 dashboard.
 
 In this specific case, /var/run/docker.sock:/var/run/docker.sock allows Traefik to access the Docker socket of the host
@@ -234,26 +333,39 @@ For the javaserver, we want to access it with the url `localhost/api`. So we add
 `traefik.http.routers.javaserver.rule=Host(`localhost`) && PathPrefix(`/api`)`. To be able to access the javaserver, we
 also have to expose the port 80.
 
+### Pros of a reverse proxy
+
+By using a reverse proxy, we can access all the services running inside the docker compose file with only one url. We
+don't have to specify the port of each service.
+
+We can also use the reverse proxy to handle the HTTPS connection and communicate with the nginx directly on port 80.
+It allows us to have a secure connection between the client and the server without having to modify the code of the
+services, or putting it inside a DMZ.
+
+For security reasons, only the reverse proxy is accessible from the outside.
+
+We can also use the reverse proxy to handle the load balancing and scalability of the services running inside the docker
+compose file. We can also use the reverse proxy to handle the sticky sessions.
+
 ## Step 5: Scalability and load balancing
 
 To let Traefik discover how many instances of a service are running, we have to add the following label to the service:
 
-```
+```yaml
     command:
-    - --providers.docker
+      - --providers.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
 
 By doing this, we are saying to Traefik to use the docker provider to discover the services running inside the docker
-and
-to use the docker socket to access the docker engine. With this configuration, the socket will be mounted (and not
-copied)
-inside the container and make possible the dynamic discovery of the services running inside the docker compose file.
+and to use the docker socket to access the docker engine. With this configuration, the socket will be mounted (and not
+copied) inside the container and make possible the dynamic discovery of the services running inside the docker compose
+file.
 
 To start several server instance, we use the `deploy` command inside the docker compose file
 
-```
+```yaml
   nginx:
     build: nginx
     labels:
@@ -270,12 +382,10 @@ docker compose up --scale nginx=6 -d
 ```
 
 This command will set the number of instances for nginx to 6. If the actual number of instances is lower, docker will
-add
-new instances. And if it's greater, it will remove instances.
+add new instances. And if it's greater, it will remove instances.
 
-To check if its truly working, we can use the traefik dashboard. We can access it with the url `localhost:8080` and
-check
-the number of instance for each service that Traefik is managing. We should see the number of instance that we set
+To check if its truly working, we can use the Traefik dashboard. We can access it with the url `localhost:8080` and
+check the number of instance for each service that Traefik is managing. We should see the number of instance that we set
 earlier.
 
 ## Step 6: Load balancing with round-robin and sticky sessions
@@ -289,13 +399,16 @@ file :
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
 ```
 
-We don't have to specify a sticky cookie for the java server because our web page is stateless. So, we don't need to
-keep
-the session of the user on the same server.
+We don't have to specify a sticky cookie for the nginx server because our web page is stateless. So, we don't need to
+keep the session of the user on the same server.
 
-// TODO
 To test the sticky sessions, we added logs inside the java server. We can see the logs inside the command line and check
 with the docker header which instance of the java server is responding.
+
+| Server instance | Sticky cookie   | Round robin             |
+|-----------------|-----------------|-------------------------|
+| java server     | Test Ok         | Ok, if no Sticky cookie |
+| nginx           | not implemented | Test Ok                 |
 
 ## Step 7: Securing Traefik with HTTPS
 
@@ -378,7 +491,7 @@ folder `traefik/ssl`.
 To manage easily the docker containers, we can use the portainer service. To do so, we have to add the following service
 inside the docker compose file:
 
-```
+```yaml
   portainer:
     image: portainer/portainer-ce:latest
     ports:
@@ -397,6 +510,30 @@ save the data.
 With this configuration, we can access the portainer dashboard with the url `localhost:9000` or `localhost:9443`. With
 portainer, we can manage the docker containers, the docker images, the docker volumes and the docker networks easily,
 without coding manually a web interface.
+
+#### Portainer labels --Tested but not used
+
+In the beginning, we tried to use the reverse proxy Traefik to access the Portainer dashboard and manage the HTTPS
+connection. However, we encountered some issues with the Traefik dashboard and the Portainer dashboard. We were able to
+access the Traefik dashboard, but not the Portainer dashboard. We tried to resolve this issue with the Professor, but
+we were not able to find a solution. We decided to use the previous configuration to access the Portainer dashboard.
+
+```yaml
+    portainer:
+      image: portainer/portainer-ce:latest
+      ports:
+        - 9443:9443
+        - 9000:9000
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ./portainer_data:/data
+      restart: unless-stopped #restart automatically if not stopped by user
+    labels:
+      - traefik.http.routers.portainer.rule=Host(`localhost`) && PathPrefix(`/portainer`)
+      - traefik.http.routers.portainer.entrypoints=https
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+```
 
 ### Optional step 2: Integration API - static Web site
 
@@ -438,3 +575,8 @@ object and places it in the appropriate form fields. Here's how it works:
 `window.onload`: This function is executed when the page is fully loaded. It retrieves the ID of the object to be
 modified from the page URL (e.g., employesUpdate.html?id=1). Then, it makes a GET request to the API to fetch
 information about the object with that ID.
+
+Inside the file `login.html`, we added a javascript code to handle the login. It retrieves the login and the password
+and
+submit them to the API. If the login and the password are correct, the API will return a cookie with the role of the
+user and the id. We can then redirect the user to the correct page.
