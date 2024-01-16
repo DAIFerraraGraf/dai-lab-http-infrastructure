@@ -1,4 +1,4 @@
-# dai-lab-https
+# DAI-lab-http-infrastructure
 
 ## Step 1: Static Web site
 
@@ -24,8 +24,11 @@ To avoid conflict while building the image, we remove de default configuration f
 folder.
 
 ## Step 2: Docker compose
+
 ### Docker compose file for step 2
+
 This is the docker compose file we used for step 2. It contains only the nginx service.
+
 ```
 version: '3.8'
 services:
@@ -36,7 +39,9 @@ services:
 ```
 
 ### Docker compose file
-This is our final  docker compose file, containing all the services we used for this project.
+
+This is our final docker compose file, containing all the services we used for this project.
+
 ```
 version: '3.8'
 services:
@@ -93,27 +98,35 @@ services:
 ```
 
 ### Docker compose file explanation
+
 To start the docker compose, we can use the following command:
+
 ```bash
 docker compose up
 docker compose up -d # To start the docker compose in detached mode
 ```
+
 To rebuild the docker compose, we can use the following command:
+
 ```bash
 docker compose build
 docker compose up --build # To rebuild the docker compose and start it
 ```
+
 To stop the docker compose, we can use CTRL-C if docker compose is not in the background or the following command:
+
 ```bash
 docker compose stop
 docker compose down # To stop and remove the docker compose
 ```
 
-
 ## Step 3: HTTP API server
+
 ### Overview
+
 We jointly integrated the database project with the DAI project for the graphical interface part to display the data.
-The database project is a garbage center management system. It allows to manage the employees and the waste collection.
+The database project is a garbage center management system. It allows to manage the employees and the waste collection
+schedule.
 
 In our graphical interface, we have two views. Each view is displayed in function of the role of the login user. We
 have
@@ -135,8 +148,31 @@ collection.
 To make the project more realistic, we added a database to store the data. We used the PostgreSQL database.
 
 ### API
-To communicate with the api, we used the url `localhost/api`. We tested each CRUD operation with the software Bruno and 
+
+To communicate with the api, we used the url `localhost/api`. We tested each CRUD operation with the software Bruno and
 save the tests inside the `Bruno` folder.
+
+| HTTP Method | URL                            | Description                               |
+|-------------|--------------------------------|-------------------------------------------|
+| GET         | /api/employes                  | Retrieve all employees*                   |
+| GET         | /api/employes/{idlogin}        | Retrieve a specific employee              |
+| POST        | /api/employes                  | Create an employee                        |
+| PUT         | /api/employes/{idlogin}        | Modify a specific employee                |
+| DELETE      | /api/employes/{idlogin}        | Delete a specific employee                |
+| GET         | /api/employesExist/{idlogin}   | Check if a specific employee exists       |
+| GET         | /api/fonctions                 | Retrieve employees' functions             |
+| GET         | /api/adresses                  | Retrieve employees' addresses             |
+| GET         | /api/decheteries               | Retrieve landfills                        |
+| GET         | /api/vehicules                 | Retrieve vehicles                         |
+| GET         | /api/contenants/{idDecheterie} | Retrieve employees in a specific landfill |
+| GET         | /api/employesList              | Retrieve the list of drivers              |
+| GET         | /api/ramassages                | Retrieve pickups                          |
+| GET         | /api/ramassages/{id}           | Retrieve a specific pickup                |
+| POST        | /api/ramassages                | Create a pickup                           |
+| DELETE      | /api/ramassages/{id}           | Delete a pickup                           |
+| PUT         | /api/ramassages/{id}           | Modify a pickup                           |
+
+*Note that, for these functions, data retrieval may vary based on cookies.
 
 ## Step 4: Reverse proxy with Traefik
 
@@ -158,7 +194,7 @@ want to access the traefik dashboard.
 ```
 
 The first line is the name of the service. The second line is the image we want to use. The third line is the command
-we want to execute when the container is started. 
+we want to execute when the container is started.
 
 In our case, we want to enable the traefik dashboard and we want to
 use the docker provider. The docker provider allows traefik to discover the services running in the docker compose file.
@@ -199,17 +235,21 @@ For the javaserver, we want to access it with the url `localhost/api`. So we add
 also have to expose the port 80.
 
 ## Step 5: Scalability and load balancing
+
 To let Traefik discover how many instances of a service are running, we have to add the following label to the service:
+
 ```
     command:
     - --providers.docker
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 ```
-By doing this, we are saying to Traefik to use the docker provider to discover the services running inside the docker and
-to use the docker socket to access the docker engine. With this configuration, the socket will be mounted (and not copied) 
-inside the container and make possible the dynamic discovery of the services running inside the docker compose file.
 
+By doing this, we are saying to Traefik to use the docker provider to discover the services running inside the docker
+and
+to use the docker socket to access the docker engine. With this configuration, the socket will be mounted (and not
+copied)
+inside the container and make possible the dynamic discovery of the services running inside the docker compose file.
 
 To start several server instance, we use the `deploy` command inside the docker compose file
 
@@ -224,14 +264,19 @@ To start several server instance, we use the `deploy` command inside the docker 
 
 For testing Treafik, we can use this command to add or remove some instance of each service running inside the docker
 compose:
+
 ```
 docker compose up --scale nginx=6 -d
 ```
-This command will set the number of instances for nginx to 6. If the actual number of instances is lower, docker will add
+
+This command will set the number of instances for nginx to 6. If the actual number of instances is lower, docker will
+add
 new instances. And if it's greater, it will remove instances.
 
-To check if its truly working, we can use the traefik dashboard. We can access it with the url `localhost:8080` and check
-the number of instance for each service that Traefik is managing. We should see the number of instance that we set earlier.
+To check if its truly working, we can use the traefik dashboard. We can access it with the url `localhost:8080` and
+check
+the number of instance for each service that Traefik is managing. We should see the number of instance that we set
+earlier.
 
 ## Step 6: Load balancing with round-robin and sticky sessions
 
@@ -243,13 +288,14 @@ file :
       - traefik.http.services.javaserver.loadbalancer.sticky=true
       - traefik.http.services.javaserver.loadbalancer.sticky.cookie.name=StickyCookie
 ```
-We don't have to specify a sticky cookie for the java server because our web page is stateless. So, we don't need to keep
+
+We don't have to specify a sticky cookie for the java server because our web page is stateless. So, we don't need to
+keep
 the session of the user on the same server.
 
 // TODO
-To test the sticky sessions, we added logs inside the java server. We can see the logs inside the command line and check 
+To test the sticky sessions, we added logs inside the java server. We can see the logs inside the command line and check
 with the docker header which instance of the java server is responding.
-
 
 ## Step 7: Securing Traefik with HTTPS
 
@@ -353,28 +399,42 @@ portainer, we can manage the docker containers, the docker images, the docker vo
 without coding manually a web interface.
 
 ### Optional step 2: Integration API - static Web site
+
 As we said earlier, we integrated the database project with the DAI project for the graphical interface part to display
 the data. It includes some javascript code to display the data and make all the CRUD operations.
 
-In the `Management.js` file, several functions are defined to handle interactions with the API and update the user interface.
+In the `Management.js` file, several functions are defined to handle interactions with the API and update the user
+interface.
 
-1. `fetchDataEmployee()` and `fetchDataRamassage()`: These functions respectively retrieve employee and pickup data from the API and call the populateTable() function to fill the table with the retrieved data.
+1. `fetchDataEmployee()` and `fetchDataRamassage()`: These functions respectively retrieve employee and pickup data from
+   the API and call the populateTable() function to fill the table with the retrieved data.
 
-2. `populateTable(data, type)`: This function populates the HTML table with the provided JSON data. It dynamically creates table headers and rows based on the data.
+2. `populateTable(data, type)`: This function populates the HTML table with the provided JSON data. It dynamically
+   creates table headers and rows based on the data.
 
 3. `deleteElementById(id, type)`: This function sends a DELETE request to the API to remove an element by its ID.
 
-4. `fetchFonctions()`, `fetchAdresses()`, `fetchDecheteries()`, `fetchEmployesList()`, `fetchVehicle()`, `fetchStatus()`: These functions retrieve respective data from the API and call the populateDropdown() function to fill dropdown lists with the retrieved data.
+4. `fetchFonctions()`, `fetchAdresses()`, `fetchDecheteries()`, `fetchEmployesList()`, `fetchVehicle()`, `fetchStatus()`:
+   These functions retrieve respective data from the API and call the populateDropdown() function to fill dropdown lists
+   with the retrieved data.
 
 5. `populateDropdown(dropdownId, data)`: This function fills an HTML dropdown list with the provided JSON data.
 
-6. `submitUpdateEmployeeForm()`, `submitRamassageUpdateForm()`, `submitCreateEmployeeForm()`, `submitCreateRamassageForm()`: These functions retrieve form values, create an object with these values, convert it to JSON, and send a PUT or POST request to the API to update or create an employee or pickup.
+6. `submitUpdateEmployeeForm()`, `submitRamassageUpdateForm()`, `submitCreateEmployeeForm()`, `submitCreateRamassageForm()`:
+   These functions retrieve form values, create an object with these values, convert it to JSON, and send a PUT or POST
+   request to the API to update or create an employee or pickup.
 
-7. `onClickAnnulerEmployee()`, `onClickAnnulerRamassage()`, `onClickAddEmployee()`, `onClickAddRamassage()`: These functions redirect the user to another page when a button is clicked.
+7. `onClickAnnulerEmployee()`, `onClickAnnulerRamassage()`, `onClickAddEmployee()`, `onClickAddRamassage()`: These
+   functions redirect the user to another page when a button is clicked.
 
 8. `logout()`: This function removes all cookies and redirects the user to the login page.
 
-These functions manage interactions between the user interface and the API, providing a dynamic interface for viewing, creating, modifying, and deleting data.
+These functions manage interactions between the user interface and the API, providing a dynamic interface for viewing,
+creating, modifying, and deleting data.
 
-In the HTML files `employesUpdate.html` and `ramassagesUpdate.html`, JavaScript code is included at the end to populate the forms when clicking the "Modify" button for an object. This JavaScript code retrieves information from the selected object and places it in the appropriate form fields. Here's how it works:
-`window.onload`: This function is executed when the page is fully loaded. It retrieves the ID of the object to be modified from the page URL (e.g., employesUpdate.html?id=1). Then, it makes a GET request to the API to fetch information about the object with that ID.
+In the HTML files `employesUpdate.html` and `ramassagesUpdate.html`, JavaScript code is included at the end to populate
+the forms when clicking the "Modify" button for an object. This JavaScript code retrieves information from the selected
+object and places it in the appropriate form fields. Here's how it works:
+`window.onload`: This function is executed when the page is fully loaded. It retrieves the ID of the object to be
+modified from the page URL (e.g., employesUpdate.html?id=1). Then, it makes a GET request to the API to fetch
+information about the object with that ID.
