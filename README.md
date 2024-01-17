@@ -218,6 +218,17 @@ collection.
 
 To make the project more realistic, we added a database to store the data. We used the PostgreSQL database.
 
+### Data Base
+#### Entity-Relationship Diagram
+Here is the Entity-Relationship Diagram of the database:
+![Entity-Relationship Diagram](img/UML.png)
+
+#### Relational Schema
+Here is the Relational Schema of the database:
+![Entity-Relationship Diagram](img/UML_logique.png)
+
+
+All the schemas, diagrams and SQL scripts were created during the database project.
 ### API
 
 To communicate with the api, we used the url `localhost/api`. We tested each CRUD operation with the software Bruno and
