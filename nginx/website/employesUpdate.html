@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Responsive Table</title>
+    <title>Employe Formulaire</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet">
@@ -134,39 +134,35 @@
         });
     });
 
-    window.onload = function() {
+    window.onload = async function() {
         const urlParams = new URLSearchParams(window.location.search);
         const idToFetch = urlParams.get('id');
-        fetchDecheteries();
-        fetchAdresses();
-        fetchFonctions();
 
-        if (idToFetch) {
+        try {
+            await Promise.all([fetchDecheteries(), fetchAdresses(), fetchFonctions()]);
 
-            fetch(`https://localhost/api/employes/${idToFetch}`)
-                .then(response => response.json())
-                .then(employeeData => {
-                    const dateNaissance = new Date(employeeData.datenaissance);
-                    const formattedDateN = dateNaissance.toISOString().split('T')[0];
-                    document.getElementById('dob').value = formattedDateN;
+            const response = await fetch(`https://localhost/api/employes/${idToFetch}`);
+            const employeeData = await response.json();
 
-                    const dateDebutContrat = new Date(employeeData.datedebutcontrat);
-                    const formattedDateC = dateDebutContrat.toISOString().split('T')[0];
-                    document.getElementById('contractStartDate').value = formattedDateC;
+            const dateNaissance = new Date(employeeData.datenaissance);
+            const formattedDateN = dateNaissance.toISOString().split('T')[0];
+            document.getElementById('dob').value = formattedDateN;
 
-                    document.getElementById('loginId').value = employeeData.idlogin;
-                    document.getElementById('password').value = employeeData.mdplogin;
-                    document.getElementById('nom').value = employeeData.nom;
-                    document.getElementById('prenom').value = employeeData.prenom;
-                    document.getElementById('phone').value = employeeData.numtelephone;
-                    document.getElementById('licenseType').value = employeeData.typepermis;
-                    $('#fonction').val(employeeData.fk_fonction).trigger('change');
-                    $('#adresse').val(employeeData.fk_adresse).trigger('change');
-                    $('#decheterie').val(employeeData.fk_decheterie).trigger('change');
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la récupération des données de l\'employé:', error);
-                });
+            const dateDebutContrat = new Date(employeeData.datedebutcontrat);
+            const formattedDateC = dateDebutContrat.toISOString().split('T')[0];
+            document.getElementById('contractStartDate').value = formattedDateC;
+
+            document.getElementById('loginId').value = employeeData.idlogin;
+            document.getElementById('password').value = employeeData.mdplogin;
+            document.getElementById('nom').value = employeeData.nom;
+            document.getElementById('prenom').value = employeeData.prenom;
+            document.getElementById('phone').value = employeeData.numtelephone;
+            document.getElementById('licenseType').value = employeeData.typepermis;
+            $('#fonction').val(employeeData.fk_fonction).trigger('change');
+            $('#adresse').val(employeeData.fk_adresse).trigger('change');
+            $('#decheterie').val(employeeData.fk_decheterie).trigger('change');
+        } catch (error) {
+            console.error('Erreur lors de la récupération des données de l\'employé:', error);
         }
     };
 </script>

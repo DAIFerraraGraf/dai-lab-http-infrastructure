@@ -89,6 +89,10 @@ public class EmployeController {
      * @param ctx le contexte de la requête HTTP
      */
     public void create(Context ctx) {
+        if (ctx.cookie("fonction").equals("Chauffeur") || ctx.cookie("fonction").equals("Employe")) {
+            ctx.status(403).result("Vous n'avez pas les droits pour effectuer cette action");
+            return;
+        }
         try {
             Employe employe = ctx.bodyAsClass(Employe.class);
             String sql;
@@ -144,6 +148,10 @@ public class EmployeController {
      * @param ctx le contexte de la requête HTTP
      */
     public void delete(Context ctx) {
+        if (ctx.cookie("fonction").equals("Chauffeur") || ctx.cookie("fonction").equals("Employe")) {
+            ctx.status(403).result("Vous n'avez pas les droits pour effectuer cette action");
+            return;
+        }
         try {
             String sql = "DELETE FROM employe WHERE idlogin = '" + ctx.pathParam("idlogin") + "'";
             int affectedRows = Database.executeUpdate(sql);

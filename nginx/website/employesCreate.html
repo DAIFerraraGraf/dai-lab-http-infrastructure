@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Responsive Table</title>
+    <title>Employe Formulaire</title>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <link href="css/style.css" rel="stylesheet">
@@ -118,14 +118,18 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready( async function() {
         $('#fonction').select2();
         $('#adresse').select2();
         $('#decheterie').select2();
         fetchFonctions();
         fetchAdresses();
         fetchDecheteries();
-        $('#fonction').trigger('change');
+        await Promise.all([fetchDecheteries(), fetchVehicle(), fetchEmployesList(), fetchStatus()]);
+        $('#fonction').val(-1).trigger('change');
+        $('#adresse').val(-1).trigger('change');
+        $('#decheterie').val(-1).trigger('change');
+
         $('#fonction').on('change', function() {
             var selectedValue = $(this).val();
             if (selectedValue !== 'Chauffeur') {

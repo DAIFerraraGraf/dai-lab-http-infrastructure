@@ -1,4 +1,4 @@
-// Fonction pour récupérer les données depuis l'API
+
 function fetchDataEmployee() {
     fetch('https://localhost/api/employes')
         .then(response => response.json())
@@ -114,82 +114,79 @@ function deleteElementById(id, type) {
         if (response.ok) {
             console.log(`${id} supprimé avec succès.`);
             window.location.reload();
-        } else {
-            console.error('La suppression a échoué');
+        }else {
+            return response.text().then(text => {
+                throw new Error(text);
+            });
         }
     })
     .catch(error => {
-        console.error('Erreur lors de la suppression:', error);
+        alert('Erreur lors de la suppression. \n ' + error.message);
     });
 }
 
-function fetchFonctions() {
-    fetch('https://localhost/api/fonctions')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('fonction', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchFonctions() {
+    try {
+        const response = await fetch('https://localhost/api/fonctions');
+        const data = await response.json();
+        populateDropdown('fonction', data);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
 }
 
 // Fonction pour récupérer les adresses depuis l'API
-function fetchAdresses() {
-    fetch('https://localhost/api/adresses')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('adresse', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchAdresses() {
+    try {
+        const response = await fetch('https://localhost/api/adresses');
+        const data = await response.json();
+        populateDropdown('adresse', data);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
 }
 
 // Fonction pour récupérer les déchèteries depuis l'API
-function fetchDecheteries() {
-    fetch('https://localhost/api/decheteries')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('decheterie', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchDecheteries() {
+
+     try {
+         const response = await fetch('https://localhost/api/decheteries');
+         const data = await response.json();
+         populateDropdown('decheterie', data);
+     } catch (error) {
+         console.error('Erreur lors de la récupération des données:', error);
+     }
 }
 
 
-function fetchEmployesList() {
-    fetch('https://localhost/api/employesList')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('employee', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchEmployesList() {
+    try {
+        const response = await fetch('https://localhost/api/employesList');
+        const data = await response.json();
+        populateDropdown('employee', data);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
 
 }
-function fetchVehicle() {
-    fetch('https://localhost/api/vehicules')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('vehicule', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchVehicle() {
+    try {
+        const response = await fetch('https://localhost/api/vehicules');
+        const data = await response.json();
+        populateDropdown('vehicule', data);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
 
 }
-function fetchStatus(){
-    fetch('https://localhost/api/status')
-        .then(response => response.json())
-        .then(data => {
-            populateDropdown('status', data);
-        })
-        .catch(error => {
-            console.error('Erreur lors de la récupération des données:', error);
-        });
+async function fetchStatus(){
+    try {
+        const response = await fetch('https://localhost/api/status');
+        const data = await response.json();
+        populateDropdown('status', data);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des données:', error);
+    }
 }
 // Fonction pour peupler une liste déroulante avec des données
 function populateDropdown(dropdownId, data) {
@@ -298,7 +295,7 @@ function submitUpdateEmployeeForm() {
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('Erreur lors de la mise à jour de l\'employé' + error.message);
+            alert('Erreur lors de la mise à jour de l\'employé. \n' + error.message);
         });
 }
 function submitRamassageUpdateForm() {
@@ -351,7 +348,7 @@ function submitRamassageUpdateForm() {
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('Erreur lors de la mise à jour du ramassage' + error.message);
+            alert('Erreur lors de la mise à jour du ramassage. \n' + error.message);
         });
 
 }
@@ -412,7 +409,7 @@ function submitCreateEmployeeForm() {
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('Erreur lors de la création de l\'employé \n' + error.message);
+            alert('Erreur lors de la création de l\'employé. \n' + error.message);
         });
 
 }
@@ -465,7 +462,7 @@ function submitCreateRamassageForm() {
         })
         .catch((error) => {
             console.error('Error:', error);
-            alert('Erreur lors de la création du ramassage \n' + error.message);
+            alert('Erreur lors de la création du ramassage. \n' + error.message);
         });
 
 }

@@ -51,7 +51,9 @@ public class DropDownController {
     public void getDecheterie(Context ctx) {
         ArrayList<DropDown> decheteries = new ArrayList<DropDown>();
         try {
-            ResultSet rs = Database.executeQuery("SELECT DISTINCT id, nom FROM decheterie");
+            ResultSet rs = Database.executeQuery("SELECT DISTINCT id, nom FROM decheterie " +
+                    "WHERE id IN (SELECT fk_decheterie FROM principale WHERE fk_principale = '" + getIdDecheteriePrincipal(ctx) + "' )" +
+                    "OR id = '" + getIdDecheteriePrincipal(ctx) + "'");
             while (rs.next()) {
                 decheteries.add(new DropDown(rs.getString("nom"), String.valueOf(rs.getInt("id"))));
             }
@@ -67,7 +69,7 @@ public class DropDownController {
     public void getVehicule(Context ctx) {
         ArrayList<DropDown> vehicules = new ArrayList<DropDown>();
         try {
-            ResultSet rs = Database.executeQuery("SELECT DISTINCT immatriculation, type, remorque FROM vehicule");
+            ResultSet rs = Database.executeQuery("SELECT DISTINCT immatriculation, type, remorque FROM vehicule WHERE fk_decheterie = '" + getIdDecheteriePrincipal(ctx) + "'");
             while (rs.next()) {
                 String vehicule = rs.getString("immatriculation") + " (" + rs.getString("type") + ")";
                 if (rs.getBoolean("remorque")) {
@@ -87,7 +89,7 @@ public class DropDownController {
     public void getEmploye(Context ctx) {
         ArrayList<DropDown> employes = new ArrayList<DropDown>();
         try {
-            ResultSet rs = Database.executeQuery("SELECT DISTINCT idlogin, nom, prenom, typepermis FROM employe WHERE fk_fonction = 'Chauffeur'");
+            ResultSet rs = Database.executeQuery("SELECT DISTINCT idlogin, nom, prenom, typepermis FROM employe WHERE fk_fonction = 'Chauffeur' AND fk_decheterie = '" + getIdDecheteriePrincipal(ctx) + "'");
             while (rs.next()) {
                 String employe = rs.getString("nom") + " " + rs.getString("prenom") + " ( Permis : " + rs.getString("typepermis") + " )";
                 employes.add(new DropDown(employe, rs.getString("idlogin")));
@@ -130,5 +132,20 @@ public class DropDownController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private int getIdDecheteriePrincipal(Context ctx){
+        String idUser = ctx.cookie("idLogin");
+        try{
+            ResultSet rs = Database.executeQuery("SELECT DISTINCT fk_principale FROM principale " +
+                    "WHERE fk_decheterie = (SELECT fk_decheterie FROM employe WHERE idlogin = '"+idUser+"') " +
+                    "OR fk_principale = (SELECT fk_decheterie FROM employe WHERE idlogin = '"+idUser+"');");
+            if (rs.next()) {
+                return rs.getInt("fk_principale");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -1;
     }
 }

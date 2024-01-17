@@ -84,6 +84,10 @@ public class RamassageController {
      * @param ctx le contexte de la requête HTTP
      */
     public void create(Context ctx) {
+        if (ctx.cookie("fonction").equals("Chauffeur") || ctx.cookie("fonction").equals("Employe")) {
+            ctx.status(403).result("Vous n'avez pas les droits pour effectuer cette action");
+            return;
+        }
         try {
 
             Ramassage ramassage = ctx.bodyAsClass(Ramassage.class);
@@ -99,6 +103,10 @@ public class RamassageController {
      * @param ctx le contexte de la requête HTTP
      */
     public void delete(Context ctx) {
+        if (ctx.cookie("fonction").equals("Chauffeur") || ctx.cookie("fonction").equals("Employe")) {
+            ctx.status(403).result("Vous n'avez pas les droits pour effectuer cette action");
+            return;
+        }
         try {
             Database.executeUpdate("DELETE FROM ramassage WHERE id = '" + ctx.pathParam("id") + "'");
             ctx.status(204);
@@ -111,6 +119,10 @@ public class RamassageController {
      * @param ctx le contexte de la requête HTTP
      */
     public void update(Context ctx) {
+        if (ctx.cookie("fonction").equals("Chauffeur") || ctx.cookie("fonction").equals("Employe")) {
+            ctx.status(403).result("Vous n'avez pas les droits pour effectuer cette action");
+            return;
+        }
         try {
             Ramassage ramassage = ctx.bodyAsClass(Ramassage.class);
             Database.executeUpdate("UPDATE ramassage SET date = '" + ramassage.date + "', fk_status = '" + ramassage.fk_status + "', poids = '" + ramassage.poids + "', fk_contenant = '" + ramassage.fk_contenant + "', fk_employee = '" + ramassage.fk_employee + "', fk_decheterie = '" + ramassage.fk_decheterie + "', fk_vehicule = '" + ramassage.fk_vehicule + "' WHERE id = '" + ctx.pathParam("id") + "'");

@@ -103,16 +103,19 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
+    $(document).ready(async function() {
         $('#employee').select2();
         $('#contenant').select2();
         $('#decheterie').select2();
         $('#vehicule').select2();
         $('#status').select2();
-        fetchDecheteries();
-        fetchEmployesList();
-        fetchVehicle();
-        fetchStatus();
+
+        await Promise.all([fetchDecheteries(), fetchVehicle(), fetchEmployesList(), fetchStatus()]);
+        $('#employee').val(-1).trigger('change');
+        $('#vehicule').val(-1).trigger('change');
+        $('#status').val(-1).trigger('change');
+        $('#decheterie').val(-1).trigger('change');
+
         $('#decheterie').on('change', function () {
             // Vérifiez si e.params est défini
 
