@@ -2,6 +2,44 @@
 
 ### Authors: Justin Ferrara, Andrea Graf
 
+## Getting Started
+
+## Procédure de lancement des servers
+
+### Software requirements
+- a manager for database, for example DataGrip
+- Docker
+- Docker compose
+- a web browser
+***
+### Setup
+To deploy the application, follow the steps below:
+
+- Inside the project directory, run the following command to build a Docker container for the application.
+    ```
+    docker compose up --build
+    ```
+
+- To access the database, use the following credentials:
+    ```
+    User (Login) : bdr
+    Password : bdr
+    Host : localhost
+    Port : 5432
+    ```
+- To fill the database with data, execute the file in [/sql/GestionDecheterie](./sql/GestionDecheterie.sql) 
+and execute it completely inside the database.
+
+- To access the application : Open a browser and access `https://localhost`.
+
+- Connection inside the application : to connect to the application, you can use the following credentials as an example:
+    ```
+    Login : lhussain
+    Mot de passe : password
+    ```
+
+
+# Report
 ## Step 1: Static Web site
 
 To start, we created a static Web page with its own folder.
@@ -236,7 +274,7 @@ save the tests inside the `Bruno` folder.
 
 | HTTP Method | URL                            | Description                               |
 |-------------|--------------------------------|-------------------------------------------|
-| GET         | /api/login                     | Check if idlogin and mdplogin is correct  |
+| POST        | /api/login                     | Check if idlogin and mdplogin is correct  |
 | GET         | /api/employes                  | Retrieve all employees*                   |
 | GET         | /api/employes/{idlogin}        | Retrieve a specific employee              |
 | POST        | /api/employes                  | Create an employee                        |
