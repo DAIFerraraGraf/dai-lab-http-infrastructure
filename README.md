@@ -236,6 +236,7 @@ save the tests inside the `Bruno` folder.
 
 | HTTP Method | URL                            | Description                               |
 |-------------|--------------------------------|-------------------------------------------|
+| GET         | /api/login                     | Check if idlogin and mdplogin is correct  |
 | GET         | /api/employes                  | Retrieve all employees*                   |
 | GET         | /api/employes/{idlogin}        | Retrieve a specific employee              |
 | POST        | /api/employes                  | Create an employee                        |
@@ -246,6 +247,7 @@ save the tests inside the `Bruno` folder.
 | GET         | /api/adresses                  | Retrieve employees' addresses             |
 | GET         | /api/decheteries               | Retrieve landfills                        |
 | GET         | /api/vehicules                 | Retrieve vehicles                         |
+| GET         | /api/status                    | Retrieve pickups' status                  |
 | GET         | /api/contenants/{idDecheterie} | Retrieve employees in a specific landfill |
 | GET         | /api/employesList              | Retrieve the list of drivers              |
 | GET         | /api/ramassages                | Retrieve pickups                          |
@@ -254,6 +256,7 @@ save the tests inside the `Bruno` folder.
 | DELETE      | /api/ramassages/{id}           | Delete a pickup                           |
 | PUT         | /api/ramassages/{id}           | Modify a pickup                           |
 
+
 *Note that, for these functions, data retrieval may vary based on cookies.
 
 For each of the CRUD operations, we used the json format to send the data to the API. We also used the json format to
@@ -261,6 +264,10 @@ retrieve the data from the API.
 
 To match the database, we created several classes to represent the data. We also created some classes to represent the
 different views of the database.
+
+For the login, we use a prepared statement to avoid SQL injection. It's the only prepared statement we used because with a basic 
+statement we can easily factorise the code. 
+
 
 ### Dockerfile
 
